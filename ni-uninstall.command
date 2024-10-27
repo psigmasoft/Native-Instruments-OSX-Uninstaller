@@ -1,37 +1,72 @@
 #!/bin/bash
-# This script removes all Native Instruments files, software, and drivers.
-# https://www.native-instruments.com/en/support/knowledge-base/show/413/how-to-uninstall-native-instruments-software-and-drivers-from-a-mac-os-x-computer/
-read -p "Are you sure you want to uninstall all Native Instruments software and drivers?" -n 1 -r
+
+# This script removes selected Native Instruments software and drivers.
+# Source: https://www.native-instruments.com/en/support/knowledge-base/show/413/how-to-uninstall-native-instruments-software-and-drivers-from-a-mac-os-x-computer/
+
+products=("Kontakt 6" "Maschine" "Komplete Kontrol" "Reaktor" "Exit")
+
+echo "Please select the Native Instruments product you want to uninstall:"
+select product in "${products[@]}"; do
+    case $product in
+        "Kontakt 6")
+            echo "You have selected to uninstall Kontakt 6."
+            break
+            ;;
+        "Maschine")
+            echo "You have selected to uninstall Maschine."
+            break
+            ;;
+        "Komplete Kontrol")
+            echo "You have selected to uninstall Komplete Kontrol."
+            break
+            ;;
+        "Reaktor")
+            echo "You have selected to uninstall Reaktor."
+            break
+            ;;
+        "Exit")
+            echo "Exiting the script."
+            exit
+            ;;
+        *)
+            echo "Invalid option $REPLY. Please try again."
+            ;;
+    esac
+done
+
+read -p "Are you sure you want to uninstall $product? [y/n] " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo
-  echo "Uninstalling..."
-  echo "Please enter your root user credentials below."
-  sudo rm -rfv /Applications/Native\ Instruments
-  sudo rm -fv /Library/Preferences/com.native-instruments.*.plist
-  sudo rm -rfv /Library/Audio/Plug-Ins/Components/Maschine*
-  sudo rm -rfv /Library/Audio/Plug-Ins/VST/Maschine*
-  sudo rm -rfv /Library/Application\ Support/Digidesign/Plug-Ins/Maschine*
-  sudo rm -rfv /Library/Application\ Support/Avid/Audio/Plug-Ins/Maschine*
-  sudo rm -rfv /Library/Application\ Support/Native\ Instruments
-  sudo rm -fv ~/Library/Preferences/com.native-instruments.*.plist
-  sudo rm -rfv ~/Library/Application\ Support/Native\ Instruments
-  sudo rm -rfv /System/Library/Extensions/NIUSB*.kext
-  sudo rm -rfv /Library/Audio/MIDI\Devices/Native\ Instruments
-  sudo rm -rfv ~/Library/Application\ Support/Native\ Instruments
-  if [[ ${OS_Version} == 10.11 ]]; then
-    echo "Operating System does not require disk utility to repair permissions."
-  else
-    echo "Repairing Disk Permissions"
+    echo "Uninstalling $product..."
+    echo "Please enter your root user credentials below."
+
+    # Define paths based on the product choice
+    if [[ $product == "Kontakt 6" ]]; then
+        sudo rm -rfv "/Applications/Native Instruments/Kontakt 6"
+        sudo rm -fv "/Library/Preferences/com.native-instruments.Kontakt 6.plist"
+        sudo rm -fv "/Users/Shared/Native Instruments/installed_products/Kontakt 6.json"
+        sudo rm -rfv "/Library/Audio/Plug-ins/Components/Kontakt 6.component"
+        sudo rm -rfv "/Library/Audio/Plug-ins/VST/Kontakt 6.vst"
+        sudo rm -rfv "/Library/Audio/Plug-Ins/VST3/Kontakt 6.vst3"
+        sudo rm -rfv "/Library/Application Support/Digidesign/Plug-ins/Kontakt 6.dpm"
+        sudo rm -rfv "/Library/Application Support/Avid/Audio/Plug-ins/Kontakt 6.aaxplugin"
+        sudo rm -rfv "/Library/Application Support/Native Instruments/Kontakt 6"
+        sudo rm -fv "/Library/Application Support/Native Instruments/Service Center/Kontakt 6.xml"
+        sudo rm -fv "$HOME/Library/Preferences/com.native-instruments.Kontakt 6.plist"
+        sudo rm -rfv "$HOME/Library/Application Support/Native Instruments/Kontakt 6"
+        # Add any additional file paths if necessary
+    fi
+
+    echo "Uninstallation complete."
+
+    read -p "Reboot? [y/n] " -n 1 -r
     echo
-    sudo diskutil repairPermissions /
-  fi
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        sudo shutdown -r +1
+    fi
+else
+    echo "Uninstallation canceled."
 fi
-read -p "Reboot?" -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  sudo shutdown -r now
-fi
-echo
+
 echo "EXIT"
 exit
