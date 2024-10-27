@@ -81,6 +81,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         sudo shutdown -r +1
+        # Display popup to user warning them of the upcoming reboot in 1 minute
+        osascript -e 'tell app "System Events" to display dialog "Your computer will reboot in 1 minute." buttons "OK" default button 1 with icon caution'
     fi
 else
     echo "Uninstallation canceled."
